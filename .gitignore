@@ -31,3 +31,8 @@ node_modules
 
 # Optional REPL history
 .node_repl_history
+
+.idea/
+
+# Keep this out as long as passwords are stored in file
+docker-compose.yml
