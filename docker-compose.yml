@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+
+# dispatch-api main process depends on dispatch-database
+# docker-compose builds all containers in prescribed order,
+# but does not wait for processes to start.
+# Therefore, the dispatch-api container crashes as it can't connect to the DB.
+# re-running "docker-compose up" is a workaround.
+
+  #when building from Bitbucket, the container does not point to the correct DB. Investigate... 
+  dispatch-api:
+    #build:
+      #context: https://j_brannigan:HuskyHank71@bitbucket.org/sgs91810/dispatch-api.git#master
+    image: digitaldispatch/dispatch-api:0.4.28-walla_walla
+    ports:
+     - "6859:5000"
+     - "5001:5001"
+    environment:
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres123"
+      DB_HOST: "dispatch-database"
+      GROUNDHOG_DB_DUMP: "test/fixtures/release4/walla_walla/data.sql"
+    depends_on:
+     - "vehicle-gateway"
+
+  vehicle-gateway:
+    build:
+      context: https://j_brannigan:HuskyHank71@bitbucket.org/sgs91810/vehicle-gateway.git#master
+    ports:
+     - "6000:6000"
+    environment:
+      FLEET_SIMULATOR_DISABLED: "false"
+      ARCHIVER_ENABLED: "false" 
+      WING_DISABLED: "true"
+    depends_on:
+     - "dispatch-database"
+
+  dispatch-database:
+    build:
+      context: https://j_brannigan:HuskyHank71@bitbucket.org/sgs91810/dispatch-api.git#master:db
+    ports:
+     - "5432:5432"
+
+  fleet-simulator:
+    build:
+      context: https://j_brannigan:HuskyHank71@bitbucket.org/sgs91810/fleet-simulator.git
+
+
+

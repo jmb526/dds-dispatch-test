@@ -1,0 +1,19 @@
+version: '2'
+services:
+  vehicle-gateway:
+    build: 
+      context: ~/vehicle-gateway
+    ports:
+     - "6000:6000"
+    environment:
+      FLEET_SIMULATOR_DISABLED: "false"
+      ARCHIVER_ENABLED: "false"
+      WING_DISABLED: "true"
+    depends_on:
+     - fleet-simulator
+  fleet-simulator:
+    build:
+      context: ~/fleet-simulator
+
+
+
